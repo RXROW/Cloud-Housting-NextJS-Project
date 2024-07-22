@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Hero from "./components/home/Hero";
 import WebHostingPlan from "./components/home/WebHostingPlan";
+import { ToastContainer } from "react-toastify";
  
  
 const Home = () => {
@@ -12,6 +13,7 @@ const Home = () => {
 
   return (
     <div className=" max-w-screen-xl mt-16  mx-auto p-6">
+  
       <Hero/>
       <WebHostingPlan/>
    
