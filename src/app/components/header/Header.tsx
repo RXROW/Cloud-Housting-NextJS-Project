@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { SiAudiotechnica } from "react-icons/si";
 
-console.log("this header component")
+
 const Header = () => {
   return (
     <div className="  bg-blue-100 ">
