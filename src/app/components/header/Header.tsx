@@ -2,12 +2,11 @@ import Link from "next/link";
 import React from "react";
 import { SiAudiotechnica } from "react-icons/si";
 
-
 const Header = () => {
   return (
-    <div className="  bg-blue-100 ">
-      <div className="max-w-screen-xl mx-auto p-1   ">
-        <div className="navbar  bg-blue-100 ">
+    <div className="bg-blue-100 fixed top-0 left-0 w-full shadow-sm  z-50">
+      <div className="max-w-screen-xl mx-auto p-1">
+        <div className="navbar bg-blue-100">
           <div className="navbar-start">
             <div className="dropdown">
               <div
@@ -39,63 +38,66 @@ const Header = () => {
                     Home
                   </Link>
                 </li>
-
                 <li>
-                  <Link href="about" legacyBehavior>
+                  <Link href="/about" legacyBehavior>
                     About
                   </Link>
                 </li>
                 <li>
-                  <Link href="articles" legacyBehavior>
-                    Articels
+                  <Link href="/articles" legacyBehavior>
+                    Articles
                   </Link>
                 </li>
                 <li>
-                  <Link href="admin" legacyBehavior>
+                  <Link href="/admin" legacyBehavior>
                     Admin
                   </Link>
                 </li>
               </ul>
             </div>
             <Link href="#" legacyBehavior>
-            <span className="flex justify-center   md:text-3xl items-center "> 
-            Cloud Hosting
-            <SiAudiotechnica  className="text   ml-2"/>
-            </span>
-    
+              <span className="flex justify-center md:text-3xl items-center">
+                Cloud Hosting
+                <SiAudiotechnica className="text ml-2" />
+              </span>
             </Link>
           </div>
-          <div className="navbar-center hidden  lg:flex">
+          <div className="navbar-center hidden lg:flex">
             <ul className="menu menu-horizontal px-1">
-            <li>
-                  <Link href="/" legacyBehavior>
-                    Home
-                  </Link>
-                </li>
-         
               <li>
-                  <Link href="about" legacyBehavior>
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="articles" legacyBehavior>
-                    Articels
-                  </Link>
-                </li>
-                <li>
-                  <Link href="admin" legacyBehavior>
-                    Admin
-                  </Link>
-                </li>
+                <Link href="/" legacyBehavior>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" legacyBehavior>
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/articles" legacyBehavior>
+                  Articles
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" legacyBehavior>
+                  Admin
+                </Link>
+              </li>
             </ul>
           </div>
           <div className="navbar-end">
-          <Link href="login" className=" bg-blue-500 text-white p-2 rounded-sm   hover:bg-blue-700 transition "  >
-           Login
+            <Link
+              href="/login"
+              className="bg-blue-500 text-white p-2 rounded-sm hover:bg-blue-700 transition"
+            >
+              Login
             </Link>
-            <Link href="register" className=" bg-blue-500 text-white p-2 rounded-sm ml-2 hover:bg-blue-700 transition "  >
-      Register
+            <Link
+              href="/register"
+              className="bg-blue-500 text-white p-2 rounded-sm ml-2 hover:bg-blue-700 transition"
+            >
+              Register
             </Link>
           </div>
         </div>

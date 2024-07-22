@@ -26,7 +26,7 @@ const Page: React.FC<PageProps> = ({ params }) => {
   }, [params.id]);
 
   return (
-    <section className="p-8   mx-auto">
+    <section className="p-8 mt-16   mx-auto">
       <div className=" ">
         {article ? (
           <div
