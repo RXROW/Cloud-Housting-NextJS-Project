@@ -1,42 +1,46 @@
+import { articles } from "@/utils/articlesData";
+import { createArticleDTO } from "@/utils/Dtos";
+import { Article } from "@/utils/types";
+import { createZodSchema } from "@/utils/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
+ 
 
 
-const articles =[
-  {
-  userId: 1,
-  id: 1,
-  title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-  body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
-  },
-  {
-    userId: 2,
-    id: 2,
-    title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-    body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
-    },
-    {
-      userId: 3,
-      id: 3,
-      title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-      body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
-      },
-      {
-        userId: 4,
-        id: 4,
-        title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-        body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
-        },
-            
+/**
+ * @method GET
+ * @route ~/api/articles
+ * @dec Get All Articles
+ * @access Public
+ */
+export function GET(req: NextRequest) {
+  return NextResponse.json(articles, { status: 200 });
+}
+
+/**
+ * @method POST
+ * @route ~/api/articles
+ * @dec  Create New Article
+ * @access Public
+ */
+
+export async function POST(req: NextRequest) {
+  const body = (await req.json())as createArticleDTO;
 
 
-]
+const validation =createZodSchema.safeParse(body);
 
+  if(!validation.success){
+    return NextResponse.json({message:validation.error.errors[0].message}, { status: 400 });
+  }
+ 
+ const newArticle:Article ={
+  title:body.title,
+  body:body.body,
+  id:articles.length +1,
+  userId:200
+ }
+ articles.push(newArticle);
+  return NextResponse.json(newArticle,{ status: 201 });
 
-
-export function GET(req:NextRequest) {
-
-
-
-  return NextResponse.json(articles , {status:200});
-  
+ 
 }
