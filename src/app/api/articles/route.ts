@@ -2,8 +2,9 @@
 import { createArticleDTO } from "@/utils/Dtos";
 import { NextRequest, NextResponse } from "next/server";
 import { createZodSchema } from "@/utils/validationSchemas";
-import { prisma } from "@/utils/DB";
+ 
 import { Article } from "@prisma/client";
+import prisma from "@/utils/DB";
  
 
 /**

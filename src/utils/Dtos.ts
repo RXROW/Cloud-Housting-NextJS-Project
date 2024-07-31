@@ -5,5 +5,5 @@ description:string;
 
 export interface updateArticleDTO {
   title?:string;
-  body?:string;
+  description?:string;
   };
