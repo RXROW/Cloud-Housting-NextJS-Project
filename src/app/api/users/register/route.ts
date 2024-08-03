@@ -4,7 +4,7 @@ import { createRegisterZodSchema } from "@/utils/validationSchemas";
 import prisma from "@/utils/DB";
 import bcrypt from "bcryptjs";
 import { registerUserDTO } from "@/utils/Dtos";
-import { generateJWT } from "@/utils/generateToken";
+import { generateCookies, generateJWT } from "@/utils/generateToken";
 import { JWTPayload } from "@/utils/types";
 /**
  * @method POST
@@ -46,15 +46,22 @@ export async function POST(req: NextRequest) {
         isAdmin: true,
       },
     });
-    const jwtPayload :JWTPayload={
-      id:newUser.id,
-      isAdmin:newUser.isAdmin,
-      username:newUser.username,
-    
-    
-    }
-    const token = generateJWT(jwtPayload)
-    return NextResponse.json({ ...newUser, token }, { status: 201 });
+
+    const cookie = generateCookies({
+      id: newUser.id,
+      isAdmin: newUser.isAdmin,
+      username: newUser.username,
+    });
+
+    return NextResponse.json(
+      { ...newUser ,message:"Registered & Authenticated!" },
+      {
+        status: 201,
+        headers: {
+          "Set-Cookie": cookie,
+        },
+      }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Intrnal Server Erorr !", error },

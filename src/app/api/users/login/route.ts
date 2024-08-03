@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LoginZodSchema } from "@/utils/validationSchemas";
- 
 import prisma from "@/utils/DB";
 import bcrypt from "bcryptjs";
 import { loginUserDTO } from "@/utils/Dtos";
-import { JWTPayload } from "@/utils/types";
-import { generateJWT } from "@/utils/generateToken";
+import { generateCookies } from "@/utils/generateToken";
+
 /**
  * @method POST
  * @route ~/api/users/login
- * @dec  login User
+ * @desc  Login User
  * @access Public
  */
 export async function POST(req: NextRequest) {
@@ -23,39 +22,44 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
     const user = await prisma.user.findUnique({ where: { email: body.email } });
     if (!user) {
       return NextResponse.json(
-        { message: " Invalid Email Or Password!" },
+        { message: "Invalid Email or Password!" },
         { status: 400 }
       );
     }
+
     const isPasswordMatching = await bcrypt.compare(
       body.password,
       user.password
     );
     if (!isPasswordMatching) {
       return NextResponse.json(
-        { message: " Invalid Email Or Password!" },
+        { message: "Invalid Email or Password!" },
         { status: 400 }
       );
     }
-const jwtPayload :JWTPayload={
-  id:user.id,
-  isAdmin:user.isAdmin,
-  username:user.username,
 
+    const cookie = generateCookies({
+      id: user.id,
+      isAdmin: user.isAdmin,
+      username: user.username,
+    });
 
-}
-const token = generateJWT(jwtPayload)
- 
     return NextResponse.json(
-      { message: "Authenticated", token },
-      { status: 200 }
+      { message: "Authenticated" },
+      {
+        status: 200,
+        headers: {
+          "Set-Cookie": cookie,
+        },
+      }
     );
   } catch (error) {
     return NextResponse.json(
-      { message: "Intrnal Server Erorr !", error },
+      { message: "Internal Server Error!", error },
       { status: 500 }
     );
   }
