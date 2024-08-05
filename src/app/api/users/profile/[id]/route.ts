@@ -141,8 +141,16 @@ export async function PUT(req: NextRequest, { params }: Props) {
     const body = (await req.json()) as UpdateUserDTO;
 
     if (body.password) {
-      const salt = await bcrypt.genSalt(10);
-      body.password = await bcrypt.hash(body.password, salt);
+      if(body.password.length >6){
+        return NextResponse.json(
+          { message: "Password should by minimum 6 char"  },
+          { status: 400 }
+        );
+      }else{
+        const salt = await bcrypt.genSalt(10);
+        body.password = await bcrypt.hash(body.password, salt);
+      }
+
     }
 
     const updatedUser = await prisma.user.update({
