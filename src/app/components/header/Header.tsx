@@ -44,7 +44,7 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/articles" legacyBehavior>
+                  <Link href="/articles?pageNumber=1" legacyBehavior>
                     Articles
                   </Link>
                 </li>
