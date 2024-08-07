@@ -1,9 +1,9 @@
-export interface createArticleDTO {
+export interface CreateArticleDto {
   title: string;
   description: string;
 }
 
-export interface updateArticleDTO {
+export interface UpdateArticleDto {
   title?: string;
   description?: string;
 }

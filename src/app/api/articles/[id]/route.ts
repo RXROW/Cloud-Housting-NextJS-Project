@@ -1,58 +1,83 @@
-import { articles } from "@/utils/articlesData";
-import   prisma   from "@/utils/DB";
-import { updateArticleDTO } from "@/utils/Dtos";
 import { NextRequest, NextResponse } from "next/server";
-import { title } from "process";
 
-interface IProps {
+import { verifyToken } from "@/utils/verifyToken";
+import prisma from "@/utils/DB";
+import { UpdateArticleDto } from "@/utils/Dtos";
+
+interface Props {
   params: { id: string };
 }
 
 /**
- * @method GET
- * @route ~/api/articles/:id
- * @dec Get Sngile Article
- * @access Public
+ *  @method  GET
+ *  @route   ~/api/articles/:id
+ *  @desc    Get Single Article By Id
+ *  @access  public
  */
-export async function GET(req: NextRequest, { params }: IProps) {
+export async function GET(request: NextRequest, { params }: Props) {
   try {
     const article = await prisma.article.findUnique({
       where: { id: parseInt(params.id) },
+      include: {
+        comments: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
     });
+
     if (!article) {
       return NextResponse.json(
-        { message: "Article Not Found!" },
+        { message: "article not found" },
         { status: 404 }
       );
     }
+
     return NextResponse.json(article, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Intrnal Server Erorr !", error },
+      { message: "internal server error" },
       { status: 500 }
     );
   }
 }
 
 /**
- * @method PUT
- * @route ~/api/articles/:id
- * @dec Update Article
- * @access Public
+ *  @method  PUT
+ *  @route   ~/api/articles/:id
+ *  @desc    Update Article
+ *  @access  private (only admin can update article)
  */
-export async function PUT(req: NextRequest, { params }: IProps) {
+export async function PUT(request: NextRequest, { params }: Props) {
   try {
+    const user = verifyToken(request);
+    if (user === null || user.isAdmin === false) {
+      return NextResponse.json(
+        { message: "only admin, access denied" },
+        { status: 403 }
+      );
+    }
+
     const article = await prisma.article.findUnique({
       where: { id: parseInt(params.id) },
     });
 
     if (!article) {
       return NextResponse.json(
-        { message: "Article Not Found!" },
+        { message: "article not found" },
         { status: 404 }
       );
     }
-    const body = (await req.json()) as updateArticleDTO;
+
+    const body = (await request.json()) as UpdateArticleDto;
     const updatedArticle = await prisma.article.update({
       where: { id: parseInt(params.id) },
       data: {
@@ -64,37 +89,53 @@ export async function PUT(req: NextRequest, { params }: IProps) {
     return NextResponse.json(updatedArticle, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Intrnal Server Erorr !", error },
+      { message: "internal server error" },
       { status: 500 }
     );
   }
 }
 
 /**
- * @method DELETE
- * @route ~/api/articles/:id
- * @dec Update Article
- * @access Public
+ *  @method  DELETE
+ *  @route   ~/api/articles/:id
+ *  @desc    Delete Article
+ *  @access  private (only admin can delete article)
  */
-export async function DELETE(req: NextRequest, { params }: IProps) {
+export async function DELETE(request: NextRequest, { params }: Props) {
   try {
+    const user = verifyToken(request);
+    if (user === null || user.isAdmin === false) {
+      return NextResponse.json(
+        { message: "only admin, access denied" },
+        { status: 403 }
+      );
+    }
+
     const article = await prisma.article.findUnique({
       where: { id: parseInt(params.id) },
+      include: { comments: true },
     });
     if (!article) {
       return NextResponse.json(
-        { message: "Article Not Found!" },
+        { message: "article not found" },
         { status: 404 }
       );
     }
-    await prisma.article.delete({where:{ id: parseInt(params.id) }})
-  
-    return NextResponse.json({ message: "Article Deleted !" }, { status: 200 });
+
+    // deleting the article
+    await prisma.article.delete({ where: { id: parseInt(params.id) } });
+
+    // deleting the comments that belong to this article
+    const commentIds: number[] = article?.comments.map((comment) => comment.id);
+    await prisma.comment.deleteMany({
+      where: { id: { in: commentIds } },
+    });
+
+    return NextResponse.json({ message: "article deleted" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Intrnal Server Erorr !", error },
+      { message: "internal server error" },
       { status: 500 }
     );
   }
-
 }

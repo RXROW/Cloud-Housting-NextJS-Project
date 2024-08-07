@@ -1,6 +1,6 @@
 import { z } from "zod";
 // Article Schema
-export const createZodSchema= z.object({
+export const createArticleSchema= z.object({
   title:z.string().min(2).max(200),
   description:z.string().min(5),
 });
