@@ -1,54 +1,36 @@
 "use client";
+import { useEffect, useState } from "react";
+import { getSingleArticle } from "@/app/apiCall/articleApiCall";
 import AddCommentForm from "@/app/components/AddCommentForm";
 import CommentItems from "@/app/components/CommentItems";
-import { Article } from "@/utils/types";
-import React, { useEffect, useState } from "react";
+import { SingleArticle } from "@/utils/types";
 
 interface PageProps {
   params: { id: string };
 }
 
-interface Comment {
-  postId: number;
-  id: number;
-  name: string;
-  email: string;
-  body: string;
-}
-
-const Page: React.FC<PageProps> = ({ params }) => {
-  const [article, setArticle] = useState<Article | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const staticDate = "2023-07-24"; // Static date for demonstration
-
-  const fetchArticle = async () => {
-    try {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts/${params.id}`
-      );
-      const article: Article = await response.json();
-      setArticle(article);
-    } catch (error) {
-      console.error("Error fetching article:", error);
-    }
-  };
-
-  const fetchComments = async () => {
-    try {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts/${params.id}/comments`
-      );
-      const comments: Comment[] = await response.json();
-      setComments(comments);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
+const ArticlePage = ({ params }: PageProps) => {
+  const [article, setArticle] = useState<SingleArticle | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchArticle = async () => {
+      try {
+        const articleData = await getSingleArticle(params.id);
+        setArticle(articleData);
+      } catch (error) {
+        console.error("Failed to fetch article:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchArticle();
-    fetchComments();
   }, [params.id]);
+
+  if (loading) {
+    return <p className="p-8 mt-16 mx-auto">Loading...</p>;
+  }
 
   return (
     <section className="p-8 mt-16 mx-auto">
@@ -62,23 +44,24 @@ const Page: React.FC<PageProps> = ({ params }) => {
               {article.title}
             </h2>
             <p className="mt-2 text-gray-600 h-44 overflow-hidden">
-              {article.body}
+              {article.description}
             </p>
             <p className="mt-2 text-gray-500 text-sm">
-              Date: {staticDate}
+              {new Date(article.createdAt).toLocaleString()}
             </p>
-            <p className="mt-2 text-gray-500 text-sm">
-              Comments: {comments.length}
-            </p>
-            <AddCommentForm/>
-            <CommentItems/>
+            <p className="mt-2 text-gray-500 text-sm">Comments: 5</p>
+            <AddCommentForm articleId={article.id} />
+
+            {article.comments.map((comment) => (
+              <CommentItems key={comment.id} comment={comment} />
+            ))}
           </div>
         ) : (
-          <p>Loading...</p>
+          <p>Article not found.</p>
         )}
       </div>
     </section>
   );
 };
 
-export default Page;
+export default ArticlePage;

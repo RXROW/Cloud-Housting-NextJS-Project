@@ -1,5 +1,6 @@
 import { Article } from '@prisma/client';
 import { DOMAIN } from '@/utils/constants';
+import { SingleArticle } from '@/utils/types';
 
 export async function getArticles(pageNumber?: string): Promise<Article[]> {
  
@@ -15,17 +16,16 @@ export async function getArticles(pageNumber?: string): Promise<Article[]> {
   return response.json();
 }
 
-
  
 // Get single article by id
-// export async function getSingleArticle(articleId: string): Promise<SingleArticle> {
-//   const response = await fetch(`${DOMAIN}/api/articles/${articleId}`, {
-//     cache: 'no-store'
-//   });
+export async function getSingleArticle(articleId: string): Promise<SingleArticle> {
+  const response = await fetch(`${DOMAIN}/api/articles/${articleId}`, {
+    cache: 'no-store'
+  });
 
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch article");
-//   }
+  if (!response.ok) {
+    throw new Error("Failed to fetch article");
+  }
 
-//   return response.json();
-// }
+  return response.json();
+}
