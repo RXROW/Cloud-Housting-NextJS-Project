@@ -1,11 +1,9 @@
- 
 import { verifyTokenForPage } from "@/utils/verifyToken";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { SiAudiotechnica } from "react-icons/si";
- 
-import Logout from "./HeaderWrpper";
 
+import Logout from "./HeaderWrpper";
 
 const Header: React.FC = () => {
   const token = cookies().get("JwtToken")?.value || "";
@@ -17,10 +15,7 @@ const Header: React.FC = () => {
         <div className="navbar bg-blue-100">
           <div className="navbar-start">
             <div className="dropdown">
-              <button
-                tabIndex={0}
-                className="btn btn-ghost lg:hidden"
-              >
+              <button tabIndex={0} className="btn btn-ghost lg:hidden">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -49,9 +44,11 @@ const Header: React.FC = () => {
                 <li>
                   <Link href="/articles?pageNumber=1">Articles</Link>
                 </li>
-                <li>
-                  <Link href="/admin">Admin</Link>
-                </li>
+                {payload?.isAdmin && (
+                  <li>
+                    <Link href="/admin">Admin</Link>
+                  </li>
+                )}
               </ul>
             </div>
             <Link href="/">
@@ -72,16 +69,18 @@ const Header: React.FC = () => {
               <li>
                 <Link href="/articles">Articles</Link>
               </li>
-              <li>
-                <Link href="/admin">Admin</Link>
-              </li>
+              {payload?.isAdmin && (
+                <li>
+                  <Link href="/admin">Admin</Link>
+                </li>
+              )}
             </ul>
           </div>
           <div className="navbar-end">
             {payload ? (
               <div className="flex items-center gap-4">
                 <strong>{payload.username}</strong>
-          <Logout/>
+                <Logout />
               </div>
             ) : (
               <>

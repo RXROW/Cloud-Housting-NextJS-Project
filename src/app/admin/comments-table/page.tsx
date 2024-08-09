@@ -1,7 +1,16 @@
  
 import React from 'react'
-
+import { cookies } from 'next/headers';
+import { verifyTokenForPage } from '@/utils/verifyToken';
+import { redirect } from 'next/navigation';
 function AdminCommentsTable() {
+
+
+     const token = cookies().get("JwtToken")?.value || "";
+    const payload = verifyTokenForPage(token);
+    if(payload?.isAdmin===false || payload===null) redirect("/")
+
+
   const comments = [
     { name: 'John Doe', comment: 'Great job!', date: '2024-07-01' },
     { name: 'Jane Smith', comment: 'Very helpful.', date: '2024-07-02' },

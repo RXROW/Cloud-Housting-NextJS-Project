@@ -1,8 +1,13 @@
 import React from 'react'
 import AddArticleForm from './AddArticleForm'
-
-function Admin() {
+import { cookies } from 'next/headers';
+import { verifyTokenForPage } from '@/utils/verifyToken';
+import { redirect } from 'next/navigation';
  
+function Admin() {
+  const token = cookies().get("JwtToken")?.value || "";
+  const payload = verifyTokenForPage(token);
+  if(payload?.isAdmin===false || payload===null  ) redirect("/")
   return (
     <div className="fix-height mt-40 flex items-center justify-center px-5 lg:px-20">
     <div className="shadow p-4 bg-blue-200 rounded w-full">

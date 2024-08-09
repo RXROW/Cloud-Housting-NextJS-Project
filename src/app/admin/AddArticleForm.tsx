@@ -1,4 +1,6 @@
 "use client";
+import axios from 'axios';
+import { DOMAIN } from '@/utils/constants';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -8,17 +10,36 @@ const AddArticleForm = () => {
 
     const formSubmitHandler = async (e: React.FormEvent) => {
         e.preventDefault();
+        
         if (title === "") return toast.error("Title is required");
         if (description === "") return toast.error("Description is required");
-        console.log({title,description})
+        
+        try {
+            const response = await axios.post(`${DOMAIN}api/articles`, {
+                title,
+                description,
+            });
 
-        // Add your form submission logic here
-    }
+            if (response.status === 200) {
+                toast.success("Article added successfully!");
+                setTitle("");
+                setDescription("");
+            } else {
+                toast.error(`Failed to add article: ${response.data.message}`);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.error(`Error: ${error.response?.data.message || error.message}`);
+            } else {
+                toast.error("An unexpected error occurred");
+            }
+        }
+    };
 
     return (
         <form onSubmit={formSubmitHandler} className="flex flex-col">
             <input
-                className="mb-4 border rounded p-2 b text-xl"
+                className="mb-4 border rounded p-2 text-xl"
                 type="text"
                 placeholder="Enter Article Title"
                 value={title}

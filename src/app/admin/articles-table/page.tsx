@@ -1,6 +1,11 @@
 import React from 'react'
-
+import { cookies } from 'next/headers';
+import { verifyTokenForPage } from '@/utils/verifyToken';
+import { redirect } from 'next/navigation';
 function AdminArticlesTable() {
+  const token = cookies().get("JwtToken")?.value || "";
+  const payload = verifyTokenForPage(token);
+  if(payload?.isAdmin===false || payload===null) redirect("/")
   const articles = [
     { title: 'First Article', author: 'John Doe', date: '2024-07-01' },
     { title: 'Second Article', author: 'Jane Smith', date: '2024-07-02' },

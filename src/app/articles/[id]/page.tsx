@@ -11,8 +11,7 @@ interface PageProps {
 
 const ArticlePage = ({ params }: PageProps) => {
   const [article, setArticle] = useState<SingleArticle | null>(null);
-  const [loading, setLoading] = useState(true);
-
+ 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
@@ -20,17 +19,13 @@ const ArticlePage = ({ params }: PageProps) => {
         setArticle(articleData);
       } catch (error) {
         console.error("Failed to fetch article:", error);
-      } finally {
-        setLoading(false);
-      }
+      }  
     };
 
     fetchArticle();
   }, [params.id]);
 
-  if (loading) {
-    return <p className="p-8 mt-16 mx-auto">Loading...</p>;
-  }
+ 
 
   return (
     <section className="p-8 mt-16 mx-auto">
