@@ -1,19 +1,36 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { CommentWithUser } from '@/utils/types';
+import UpdateCommentForm from './UpdateCommentForm';
+import axios from 'axios';
+import { DOMAIN } from '@/utils/constants';
+import { useRouter } from 'next/navigation';
 
 interface CommentItemProps {
   comment: CommentWithUser;
 }
 
 const CommentItems = ({ comment }: CommentItemProps) => {
+ const [open, setOpen] = useState(false);
+ const router = useRouter();
 
-  const handleUpdate = (id: number) => {
-    console.log(`Update comment with id ${id}`);
+  const handleUpdate = () => {
+    setOpen(true)
+   
   };
 
-  const handleDelete = (id: number) => {
-    console.log(`Delete comment with id ${id}`);
+  const handleDelete =async () => {
+ try {
+  if(confirm("You Want to delete this comment ?")){
+    await axios.delete(`${DOMAIN}/api/comments/${comment.id}`)
+    router.refresh();
+
+  }
+ } catch (error) {
+  console.log(error)
+ }
   };
 
   return (
@@ -31,13 +48,13 @@ const CommentItems = ({ comment }: CommentItemProps) => {
           </div>
           <div className="ml-4 flex flex-col items-center gap-4 space-y-2">
             <button
-              onClick={() => handleUpdate(comment.id)}
+              onClick={() => handleUpdate()}
               className="text-blue-500 hover:text-blue-700"
             >
               <PencilIcon className="h-6 w-6" />
             </button>
             <button
-              onClick={() => handleDelete(comment.id)}
+              onClick={() => handleDelete()}
               className="text-red-500 hover:text-red-700"
             >
               <TrashIcon className="h-6 w-6" />
@@ -47,6 +64,10 @@ const CommentItems = ({ comment }: CommentItemProps) => {
       ) : (
         <p className="text-center text-gray-500">No comments yet.</p>
       )}
+      {open && <UpdateCommentForm      
+       setOpen={setOpen} 
+         text={comment.text} 
+         commentId={comment.id}  />}
     </div>
   );
 };

@@ -1,26 +1,34 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+ 
+
 
  
-export function middleware(req: NextRequest) {
-    const jwtToken = req.cookies.get("JwtToken");
-    const authToken =jwtToken?.value as string;
+ 
+//////////////////////////////////////////
 
-    if (!authToken) {
-      return NextResponse.json(
-        { message: "No Token Provided! From Middleware" },
-        { status: 400 }
-      );
+import { NextRequest, NextResponse } from 'next/server';
+
+export function middleware(request: NextRequest) {
+
+    const jwtToken = request.cookies.get("JwtToken");
+    const token = jwtToken?.value as string;
+
+    if (!token) {
+        if (request.nextUrl.pathname.startsWith("/api/users/profile/")) {
+            return NextResponse.json(
+                { message: 'no token provided, access denied' },
+                { status: 401 } // Unauthorized
+            );
+        }
+    } else {
+        if (
+            request.nextUrl.pathname === "/login" ||
+            request.nextUrl.pathname === "/register"
+        ) {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
     }
-
-   const secretKey = "yCVUrwul0vSBqElQKPVjsvf0TasBtnxR";
-    if (!secretKey) {
-      return NextResponse.json(
-        { message: "Internal Server Error: Missing Secret Key From Middleware" },
-        { status: 500 }
-      );
- } 
 }
+
 export const config = {
-  matcher: ['/api/users/profile/:path*'],  
-};
+    matcher: ["/api/users/profile/:path*", "/login", "/register"]
+}
