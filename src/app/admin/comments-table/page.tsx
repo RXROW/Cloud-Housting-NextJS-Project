@@ -1,46 +1,50 @@
- 
-import React from 'react'
-import { cookies } from 'next/headers';
-import { verifyTokenForPage } from '@/utils/verifyToken';
-import { redirect } from 'next/navigation';
-function AdminCommentsTable() {
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { verifyTokenForPage } from "@/utils/verifyToken";
+import { getAllComments } from "../adminApiCall";
 
+interface Comment {
+  id: string;
+  text: string;
+  createdAt: string;
+}
 
-     const token = cookies().get("JwtToken")?.value || "";
-    const payload = verifyTokenForPage(token);
-    if(payload?.isAdmin===false || payload===null) redirect("/")
+const AdminCommentsTable = async () => {
+  const token = cookies().get("JwtToken")?.value;
+  if (!token) redirect("/");
 
+  const payload = verifyTokenForPage(token);
+  if (payload?.isAdmin === false) redirect("/");
 
-  const comments = [
-    { name: 'John Doe', comment: 'Great job!', date: '2024-07-01' },
-    { name: 'Jane Smith', comment: 'Very helpful.', date: '2024-07-02' },
-    { name: 'Alice Johnson', comment: 'Nice work!', date: '2024-07-03' },
-    // Add more comments as needed
-  ];
+  const comments: Comment[] = await getAllComments(token) as any; 
 
   return (
-    <div className='mt-20 h-96 bg-white shadow-md rounded-lg p-6 overflow-y-auto'>
-      <h2 className='text-2xl font-semibold mb-4'>Admin Comments Table</h2>
-      <table className='min-w-full divide-y divide-gray-200'>
-        <thead className='bg-gray-50'>
+    <section className="p-5">
+      <h1 className="mb-7 text-2xl font-semibold text-gray-700">Comments</h1>
+      <table className="table w-full text-left">
+        <thead className="border-t-2 border-b-2 border-gray-500 text-xl">
           <tr>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Name</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Comment</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Date</th>
+            <th className="p-2">Comment</th>
+            <th className="hidden lg:table-cell p-3">Created At</th>
+            <th>Actions</th>
           </tr>
         </thead>
-        <tbody className='bg-white divide-y divide-gray-200'>
-          {comments.map((comment, index) => (
-            <tr key={index}>
-              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{comment.name}</td>
-              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{comment.comment}</td>
-              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{comment.date}</td>
+        <tbody>
+          {comments.map((comment) => (
+            <tr key={comment.id} className="border-b border-t border-gray-300">
+              <td className="p-3 text-gray-700">{comment.text}</td>
+              <td className="text-gray-700 p-3 font-normal hidden lg:table-cell">
+                {new Date(comment.createdAt).toDateString()}
+              </td> 
+              <td>
+                {/* <DeleteCommentButton commentId={comment.id} /> */}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
-  )
-}
+    </section>
+  );
+};
 
-export default AdminCommentsTable
+export default AdminCommentsTable;

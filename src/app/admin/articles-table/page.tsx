@@ -1,40 +1,76 @@
-import React from 'react'
-import { cookies } from 'next/headers';
-import { verifyTokenForPage } from '@/utils/verifyToken';
-import { redirect } from 'next/navigation';
-function AdminArticlesTable() {
-  const token = cookies().get("JwtToken")?.value || "";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { verifyTokenForPage } from "@/utils/verifyToken";
+import { ARTICLE_PER_PAGE } from "@/utils/constants";
+import { Article } from "@prisma/client";
+import Link from "next/link";
+import { getArticles } from "@/app/apiCall/articleApiCall";
+import prisma from "@/utils/DB";
+import Pagination from "@/app/components/Pagenation";
+ 
+
+interface AdminArticlesTableProps {
+  searchParams: { pageNumber: string };
+}
+
+const AdminArticlesTable = async ({ searchParams: { pageNumber } }: AdminArticlesTableProps) => {
+  const token = cookies().get("JwtToken")?.value;
+  if (!token) redirect("/");
+
   const payload = verifyTokenForPage(token);
-  if(payload?.isAdmin===false || payload===null) redirect("/")
-  const articles = [
-    { title: 'First Article', author: 'John Doe', date: '2024-07-01' },
-    { title: 'Second Article', author: 'Jane Smith', date: '2024-07-02' },
-    { title: 'Third Article', author: 'Alice Johnson', date: '2024-07-03' },
-    // Add more articles as needed
-  ];
+  if (payload?.isAdmin === false) redirect("/");
+
+  const articles: Article[] = await getArticles(pageNumber);
+  const count: number = await prisma.article.count();
+  const pages = Math.ceil(count / ARTICLE_PER_PAGE);
+
 
   return (
-    <div className='mt-20 h-96 bg-white shadow-md rounded-lg p-6 overflow-y-auto'>
-      <h2 className='text-2xl font-semibold mb-4'>Admin Articles Table</h2>
-      <table className='min-w-full divide-y divide-gray-200'>
-        <thead className='bg-gray-50'>
+    <section className="p-5">
+      <h1 className="mb-7 text-2xl font-semibold text-gray-700">Articles</h1>
+      <table className="table w-full text-left">
+        <thead className="border-t-2 border-b-2 border-gray-500 lg:text-xl">
           <tr>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Title</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Author</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Date</th>
+            <th className="p-1 lg:p-2">Title</th>
+            <th className="hidden lg:inline-block lg:p-2">Created At</th>
+            <th>Actions</th>
+            <th className="hidden lg:inline-block"></th>
           </tr>
         </thead>
-        <tbody className='bg-white divide-y divide-gray-200'>
-          {articles.map((article, index) => (
-            <tr key={index}>
-              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{article.title}</td>
-              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{article.author}</td>
-              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>{article.date}</td>
+        <tbody>
+          {articles.map(article => (
+            <tr key={article.id} className="border-b border-t border-gray-300">
+              <td className="p-3 text-gray-700">{article.title}</td>
+              <td className="hidden lg:inline-block text-gray-700 font-normal p-3">
+                {new Date(article.createdAt).toDateString()}
+              </td>
+              <td className="p-3">
+                <Link
+                  href={`/admin/articles-table/edit/${article.id}`}
+                  className="bg-rose-600 text-white rounded-lg py-1 px-2 inline-block text-center mb-2 me-2 lg:me-3 hover:bg-rose-800 transition"
+                >
+                  Edit
+                </Link>
+               
+              </td>
+              <td className="hidden lg:inline-block p-3">
+                <Link
+                  href={`/articles/${article.id}`}
+                  className="text-white bg-blue-600 rounded-lg p-2 hover:bg-blue-800"
+                >
+                  Read More
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+      <Pagination
+        pageNumber={parseInt(pageNumber)}
+        pages={pages}
+        route="/admin/articles-table"
+      />
+    </section>
   )
 }
 
