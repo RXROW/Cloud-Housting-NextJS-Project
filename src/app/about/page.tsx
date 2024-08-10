@@ -1,10 +1,11 @@
+/* eslint react/no-unescaped-entities: "off" */
 import React from 'react';
 import Image from 'next/image';
 import cloud_Image from '../../../public/cloud-hosting.png';
 
 const AboutPage = () => {
   return (
-    <div className="max-w-screen-xl  mt-16  mx-auto p-6 bg-gray-50">
+    <div className="max-w-screen-xl mt-16 mx-auto p-6 bg-gray-50">
       <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">About Us</h1>
       <div className="flex flex-col items-center justify-center">
         <Image 
