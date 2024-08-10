@@ -1,5 +1,6 @@
 "use client";
  
+import { DOMAIN } from '@/utils/constants';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -29,7 +30,7 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/users/register', {
+      const response = await fetch(`${DOMAIN}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

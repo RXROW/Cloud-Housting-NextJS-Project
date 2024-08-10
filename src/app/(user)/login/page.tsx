@@ -1,4 +1,5 @@
 "use client";
+import { DOMAIN } from "@/utils/constants";
 import { cookies } from "next/headers";
 import { redirect, useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -27,7 +28,7 @@ function Login() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
+      const response = await fetch(`${DOMAIN}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
