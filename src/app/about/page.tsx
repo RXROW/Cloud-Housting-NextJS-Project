@@ -3,6 +3,8 @@ import React from 'react';
 import Image from 'next/image';
 import cloud_Image from '../../../public/cloud-hosting.png';
 
+
+
 const AboutPage = () => {
   return (
     <div className="max-w-screen-xl mt-16 mx-auto p-6 bg-gray-50">
