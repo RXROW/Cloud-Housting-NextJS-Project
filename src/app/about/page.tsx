@@ -8,7 +8,7 @@ import cloud_Image from '../../../public/cloud-hosting.png';
  
 
 const page = () => {
-  return (
+   return (
     <div className="max-w-screen-xl mt-16 mx-auto p-6 bg-gray-50">
       <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">About Us</h1>
       <div className="flex flex-col items-center justify-center">
@@ -30,4 +30,5 @@ const page = () => {
   );
 }
 
+export default page
  
