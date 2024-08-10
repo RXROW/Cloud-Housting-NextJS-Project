@@ -5,7 +5,9 @@ import cloud_Image from '../../../public/cloud-hosting.png';
 
 
 
-const AboutPage = () => {
+ 
+
+const page = () => {
   return (
     <div className="max-w-screen-xl mt-16 mx-auto p-6 bg-gray-50">
       <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">About Us</h1>
@@ -26,6 +28,6 @@ const AboutPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default AboutPage;
+ 
